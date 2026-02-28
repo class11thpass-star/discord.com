@@ -13,7 +13,8 @@
   "routes": [
     {
       "src": "/api/steal",
-      "dest": "api/steal.js"
+      "dest": "api/steal.js",
+      "methods": ["GET", "POST"]
     },
     {
       "src": "/api/image",
