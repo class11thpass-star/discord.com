@@ -2,18 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "api/steal.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/image.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/steal",
-      "dest": "server.js"
+      "dest": "api/steal.js"
     },
     {
       "src": "/api/image",
-      "dest": "server.js"
+      "dest": "api/image.js"
     }
   ]
 }
